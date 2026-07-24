@@ -1,0 +1,3 @@
+DATABASE_URL = (
+    "postgresql+psycopg://postgres:password@localhost:5432/sport_partner"
+)

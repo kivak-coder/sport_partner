@@ -72,3 +72,4 @@ class EventResponse(BaseModel):
                                       and self.lon is not None):
             return self
         raise ValueError("You must specify the place!")
+  
