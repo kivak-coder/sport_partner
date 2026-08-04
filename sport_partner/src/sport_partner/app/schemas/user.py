@@ -52,7 +52,7 @@ class UserCreate(BaseModel):
             raise ValueError("Password must contain an uppercase letter")
         if not re.search(r"[a-z]", password):
             raise ValueError("Password must contain a lowercase letter")
-        if not re.search(r"/d", password):
+        if not re.search(r"\d", password):
             raise ValueError("Password must contain a digit")
         return password
 
@@ -67,11 +67,3 @@ class UserResponse(BaseModel):
     city: Annotated[str | None, Field(min_length=2, max_length=45)] = None
 
     model_config = ConfigDict(from_attributes=True)
-
-    @field_validator('name')
-    def validate_name(self, name: str) -> str:
-        return check_if_empty(name)
-
-    @field_validator('surname')
-    def validate_surname(self, surname: str) -> str:
-        return check_if_empty(surname)

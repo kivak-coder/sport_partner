@@ -11,26 +11,26 @@ class UserRepository:
             self, session: AsyncSession, email: str
             ) -> User | None:
         stmt = select(User).where(User.email == email)
-        result = await session.execute(statement=stmt)
+        result = await session.execute(stmt)
         return result.scalar_one_or_none()
 
     async def get_user_by_phone(
             self, session: AsyncSession, phone: str
             ) -> User | None:
         stmt = select(User).where(User.phone == phone)
-        result = await session.execute(statement=stmt)
+        result = await session.execute(stmt)
         return result.scalar_one_or_none()
 
     async def get_user_by_username(
             self, session: AsyncSession, username: str
             ) -> User | None:
         stmt = select(User).where(User.username == username)
-        result = await session.execute(statement=stmt)
+        result = await session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def get(self, session: AsyncSession, id: int) -> User | None:
-        stmt = select(User).where(User.id == id)
-        result = await session.execute(statement=stmt)
+    async def get(self, session: AsyncSession, user_id: int) -> User | None:
+        stmt = select(User).where(User.id == user_id)
+        result = await session.execute(stmt)
         return result.scalar_one_or_none()
 
     async def create(self, session: AsyncSession, user_in: UserCreate):
@@ -46,7 +46,7 @@ class UserRepository:
         if not update_data:
             return await self.get(session, user_id)
         stmt = (
-            update(User).where(User.id == id)
+            update(User).where(User.id == user_id)
             .values(**update_data)
             .returning(User)
         )
@@ -57,10 +57,7 @@ class UserRepository:
     async def delete(
             self, session: AsyncSession, user_id: int
     ) -> bool:
-        stmt = delete(User).where(User.id == user_id)
+        stmt = delete(User).where(User.id == user_id).returning(User.id)
         result = await session.execute(stmt)
         await session.flush()
-        return result.rowcount > 0
-
-
-       
+        return result.scalar_one_or_none() is None

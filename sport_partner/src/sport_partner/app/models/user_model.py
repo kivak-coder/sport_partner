@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import CheckConstraint, DateTime, Enum, String
+from sqlalchemy import ARRAY, CheckConstraint, DateTime, Enum, String, func
 
 from app.db.base import Base
 from sqlalchemy.orm import Mapped, mapped_column
@@ -25,7 +25,7 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column()
     email: Mapped[str] = mapped_column(String(255), unique=True)
     age: Mapped[int | None] = mapped_column(default=18)
-    fav_sports: Mapped[set[SportType] | None] = mapped_column(nullable=True)  #сомнительная фигня, но пока пусть будет
+    fav_sports: Mapped[list[SportType]] = mapped_column(ARRAY(Enum(SportType)), nullable=True)  #сомнительная фигня, но пока пусть будет
     level: Mapped[SkillLevel] = mapped_column(
         Enum(SkillLevel), default=SkillLevel.AMATEUR, index=True
         )
@@ -33,6 +33,10 @@ class User(Base):
         String(20), nullable=True, index=True
         )
     phone: Mapped[str | None] = mapped_column(nullable=True, unique=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+        )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+        )
     is_active: Mapped[bool] = mapped_column(nullable=False)

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Annotated
 from pydantic import BaseModel, ConfigDict
 from pydantic import Field, field_validator, model_validator
@@ -23,9 +23,9 @@ class EventCreate(BaseModel):
             raise ValueError("title is empty")
         return title
 
-    @field_validator('event_date')  # мб добавить часовые пояса
+    @field_validator('event_date')
     def event_date_validate(cls, date: datetime) -> datetime:
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         if now < date:
             return date
         raise ValueError(f"{date} already passed!")
@@ -51,25 +51,3 @@ class EventResponse(BaseModel):
     status: int
 
     model_config = ConfigDict(from_attributes=True)
-
-    @field_validator('title')
-    def title_name_validate(cls, title: str) -> str:
-        title = title.strip()
-        if len(title) == 0:
-            raise ValueError("title is empty")
-        return title
-
-    @field_validator('event_date')  # мб добавить часовые пояса
-    def event_date_validate(cls, date: datetime) -> datetime:
-        now = datetime.now()
-        if now < date:
-            return date
-        raise ValueError(f"{date} already passed!")
-
-    @model_validator(mode='after')
-    def validate_location(self):
-        if self.place is not None or (self.lat is not None
-                                      and self.lon is not None):
-            return self
-        raise ValueError("You must specify the place!")
-  
