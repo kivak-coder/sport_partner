@@ -25,7 +25,9 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column()
     email: Mapped[str] = mapped_column(String(255), unique=True)
     age: Mapped[int | None] = mapped_column(default=18)
-    fav_sports: Mapped[list[SportType]] = mapped_column(ARRAY(Enum(SportType)), nullable=True)  #сомнительная фигня, но пока пусть будет
+    fav_sports: Mapped[list[SportType]] = mapped_column(
+        ARRAY(Enum(SportType)), nullable=True
+        )
     level: Mapped[SkillLevel] = mapped_column(
         Enum(SkillLevel), default=SkillLevel.AMATEUR, index=True
         )

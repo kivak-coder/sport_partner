@@ -33,7 +33,7 @@ class UserRepository:
         result = await session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def create(self, session: AsyncSession, user_in: UserCreate):
+    async def create(self, session: AsyncSession, user_in: UserCreate) -> User:
         user_data = user_in.model_dump()
         db_user = User(**user_data)
         session.add(db_user)
@@ -41,7 +41,8 @@ class UserRepository:
         return db_user
 
     async def update(
-            self, session: AsyncSession, user_id: int, update_data: dict[str, Any]
+            self, session: AsyncSession, user_id: int,
+            update_data: dict[str, Any]
             ) -> User | None:
         if not update_data:
             return await self.get(session, user_id)
