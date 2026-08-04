@@ -22,6 +22,7 @@ class User(Base):
     username: Mapped[str | None] = mapped_column(
         String(55), unique=True, nullable=True
         )
+    hashed_password: Mapped[str] = mapped_column()
     email: Mapped[str] = mapped_column(String(255), unique=True)
     age: Mapped[int | None] = mapped_column(default=18)
     fav_sports: Mapped[set[SportType] | None] = mapped_column(nullable=True)  #сомнительная фигня, но пока пусть будет

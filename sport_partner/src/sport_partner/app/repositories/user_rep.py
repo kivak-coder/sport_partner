@@ -1,6 +1,9 @@
+from typing import Any
+
 from app.models.user_model import User
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import delete, select, update
+from app.schemas.user import UserCreate
 
 
 class UserRepository:
@@ -25,3 +28,39 @@ class UserRepository:
         result = await session.execute(statement=stmt)
         return result.scalar_one_or_none()
 
+    async def get(self, session: AsyncSession, id: int) -> User | None:
+        stmt = select(User).where(User.id == id)
+        result = await session.execute(statement=stmt)
+        return result.scalar_one_or_none()
+
+    async def create(self, session: AsyncSession, user_in: UserCreate):
+        user_data = user_in.model_dump()
+        db_user = User(**user_data)
+        session.add(db_user)
+        await session.flush()
+        return db_user
+
+    async def update(
+            self, session: AsyncSession, user_id: int, update_data: dict[str, Any]
+            ) -> User | None:
+        if not update_data:
+            return await self.get(session, user_id)
+        stmt = (
+            update(User).where(User.id == id)
+            .values(**update_data)
+            .returning(User)
+        )
+        result = await session.execute(stmt)
+        await session.flush()
+        return result.scalar_one_or_none()
+
+    async def delete(
+            self, session: AsyncSession, user_id: int
+    ) -> bool:
+        stmt = delete(User).where(User.id == user_id)
+        result = await session.execute(stmt)
+        await session.flush()
+        return result.rowcount > 0
+
+
+       
